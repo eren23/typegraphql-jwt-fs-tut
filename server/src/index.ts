@@ -8,6 +8,7 @@ import { ApolloServer } from "apollo-server-express"
 import { buildSchema } from "type-graphql";
 import { UserResolver } from "./UserResolver";
 import cookieParser from "cookie-parser"
+import cors from "cors"
 import { verify } from "jsonwebtoken";
 import { User } from "./entity/User";
 import { createAccessToken, createRefreshToken } from "./auth";
@@ -17,6 +18,10 @@ import { sendRefreshToken } from "./sendRefreshToken";
 
 (async () => {
     const app = express();
+    app.use(cors({
+        credentials: true,
+        origin: "http://localhost:3000"
+    }))
     app.use(cookieParser())
 
     app.get("/", (_, res) => {
@@ -63,7 +68,7 @@ import { sendRefreshToken } from "./sendRefreshToken";
         context: ({ req, res }) => ({ req, res })
     })
 
-    apolloServer.applyMiddleware({ app })
+    apolloServer.applyMiddleware({ app, cors: false })
 
 
     app.listen(4000, () => {
